@@ -15,6 +15,13 @@ assistente) fez o commit.
 Nunca commitar diretamente em `main` ou `develop`. Todo trabalho acontece em branches
 temporárias, que nascem de `develop` e voltam para `develop` via Pull Request.
 
+> **Nota:** como o repositório é privado no plano GitHub Free, não é possível ativar a
+> proteção técnica de branch (que bloquearia push direto e exigiria PR+CI obrigatoriamente) —
+> esse recurso só existe em repositórios públicos ou no GitHub Pro. A regra acima é, por ora,
+> uma convenção de equipe (reforçada em `CLAUDE.md`), não um bloqueio automático do GitHub. O
+> CI (`.github/workflows/ci.yml`) continua rodando normalmente em todo push/PR e deve ser
+> verificado manualmente antes de considerar um push em `main`/`develop` como válido.
+
 ## Branches temporárias
 
 Nomeie sempre a partir de `develop`, com o prefixo que indica o tipo de trabalho:
