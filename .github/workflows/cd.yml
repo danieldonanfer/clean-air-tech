@@ -1,0 +1,38 @@
+name: CD
+
+# Publica uma atualização OTA (EAS Update) a cada push em `main`, após o CI passar.
+# Pré-requisito: configurar o secret EXPO_TOKEN no repositório (Settings > Secrets and
+# variables > Actions) com um token de acesso da conta Expo/EAS do time.
+# Enquanto o secret não existir, o job é pulado (não quebra o pipeline).
+on:
+  workflow_run:
+    workflows: ['CI']
+    branches: [main]
+    types: [completed]
+
+jobs:
+  eas-update:
+    name: Publish EAS Update (main)
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Check EXPO_TOKEN
+        id: check
+        run: echo "has_token=${{ secrets.EXPO_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.has_token == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.has_token == 'true'
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+        if: steps.check.outputs.has_token == 'true'
+      - name: Publish update
+        if: steps.check.outputs.has_token == 'true'
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: >-
+          npx eas-cli update --branch production
+          --message "CD ${{ github.event.workflow_run.head_sha }}"
+          --non-interactive
