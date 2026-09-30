@@ -50,9 +50,39 @@ Isso permite:
 - Testes de componente (`components/`, `features/`) com `@testing-library/react-native`.
 - Todo PR que adiciona lógica nova (não puramente visual) deve vir acompanhado de teste — ver
   checklist do PR template.
-- Arquivo de exemplo mantido propositalmente em `src/utils/aqi.example.ts` +
-  `src/utils/__tests__/aqi.example.test.ts`: demonstra o padrão esperado de nomeação e estrutura
-  de teste. Remova-o assim que a primeira função real de `utils/` for adicionada.
+- O arquivo de exemplo (`src/utils/aqi.example.ts`) foi removido quando as primeiras funções
+  reais de `utils/` entraram, como este documento pedia. O padrão de nomeação e estrutura de
+  teste agora está em `src/utils/__tests__/iqa.test.ts`, `senha.test.ts` e
+  `src/services/__tests__/simulador.test.ts`.
+
+## Dados enquanto o back-end não existe
+
+`src/services/` já está no lugar, mas com implementação **mock**:
+
+- `simulador.ts` — gera as leituras dos sensores com um modelo de três camadas (valor de base,
+  ciclo diário de ocupação e ruído suave com semente). É determinístico de propósito: pedir o
+  histórico duas vezes devolve o mesmo histórico, senão o gráfico mudaria a cada recarregamento.
+- `contaLocal.ts` — usuário, senha e códigos de recuperação em memória. A senha fica em texto
+  porque guardar hash no cliente não protege nada; o hash é responsabilidade do servidor.
+- `arService`, `authService`, `perfilService`, `assistenteService`, `dispositivoService` — a
+  interface que as telas consomem. Quando a API real entrar, só o corpo destes arquivos muda.
+
+Nenhuma tela importa `simulador.ts` nem `contaLocal.ts` direto.
+
+## Dependências adicionadas além do enxoval inicial
+
+- `react-native-svg` — usada em `src/components/Icone.tsx` (o conjunto de ícones do protótipo),
+  em `AnelIQA` e no gráfico do histórico. É o módulo recomendado pela própria Expo para desenho
+  vetorial, e manter os ícones desenhados no projeto é o que deixa a tela idêntica ao Figma
+  aprovado, em vez de aproximar com uma fonte de ícones pronta.
+
+- `expo-font` e `@expo-google-fonts/plus-jakarta-sans` — a fonte do protótipo aprovado no Figma,
+  carregada no layout raiz (ver [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md)). O pacote evita versionar
+  arquivos `.ttf` no repositório e entrega os pesos já com os nomes de família usados pelo tema.
+
+Continua valendo a regra de não escolher biblioteca de estado global nem de componentes de UI sem
+alinhar com o time: o estado de sessão usa Context API pura (`src/store/sessao.tsx`) e a
+estilização é `StyleSheet` nativo.
 
 ## Design System
 
@@ -60,7 +90,10 @@ Ver [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) para os tokens de tema e convenções v
 
 ## O que ainda não foi decidido (decidir em equipe antes de usar)
 
-- Biblioteca de gerenciamento de estado global em `src/store/` (ex.: Zustand, Redux Toolkit,
-  Context API pura) — ainda não escolhida. Não instalar nenhuma sem alinhar com o time.
+- Biblioteca de gerenciamento de estado global em `src/store/` — ainda não escolhida. Por ora
+  `src/store/sessao.tsx` usa Context API pura, justamente para não decidir isso sozinho. Não
+  instalar nenhuma sem alinhar com o time.
+- Persistência da sessão entre execuções (`expo-secure-store` ou AsyncStorage) — hoje a sessão
+  vive só em memória, então recarregar a página web derruba o login.
 - Biblioteca de componentes de UI (ex.: Tamagui, NativeWind/Tailwind, React Native Paper) — ainda
   não escolhida. Até lá, estilizar com `StyleSheet` nativo do React Native.

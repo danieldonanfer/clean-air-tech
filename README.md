@@ -7,9 +7,11 @@ Curitiba.
 Equipe: Daniel Fernando Abreu de Moraes, Gabriel Guedes Archanjo, Lorena Andrade de Souza,
 Vanusa da Silva Almeida.
 
-> Este repositório contém, por enquanto, apenas a **arquitetura e os padrões** do projeto
-> (estrutura de pastas, lint, testes, CI/CD, convenção de commits e fluxo de branches) — o
-> desenvolvimento das telas ainda não foi iniciado. Ver `docs/ARQUITETURA.md`.
+> **Estado atual:** além da arquitetura e dos padrões (estrutura de pastas, lint, testes, CI/CD,
+> convenção de commits e fluxo de branches), o repositório já traz o **protótipo das 12 telas**
+> do aplicativo, portado do protótipo aprovado no Figma. Os dados ainda não vêm do back-end: a
+> camada `src/services/` responde com uma simulação determinística dos sensores e uma conta em
+> memória, trocável pela API real sem tocar nas telas. Ver `docs/ARQUITETURA.md`.
 
 ## Stack
 
@@ -27,6 +29,30 @@ Vanusa da Silva Almeida.
 npm install
 npm run start
 ```
+
+## Telas
+
+| Rota               | Tela                                             |
+| ------------------ | ------------------------------------------------ |
+| `/`                | Login                                            |
+| `/esqueci-senha`   | Recuperar acesso — etapa 1 (e-mail)              |
+| `/verificar-email` | Recuperar acesso — etapa 2 (código de 6 dígitos) |
+| `/nova-senha`      | Recuperar acesso — etapa 3 (nova senha)          |
+| `/cadastro`        | Criar conta em 4 etapas                          |
+| `/painel`          | Painel do IQA em tempo real (aba Início)         |
+| `/historico`       | Histórico analítico de 7, 30 e 90 dias (aba)     |
+| `/assistente`      | Assistente de aconselhamento (aba)               |
+| `/configuracoes`   | Configurações (aba)                              |
+| `/perfil`          | Dados pessoais                                   |
+| `/alterar-senha`   | Troca de senha de quem já entrou                 |
+| `/privacidade`     | Privacidade, segurança e exclusão de conta       |
+
+As telas são as mesmas em celular e web. O layout muda por largura (`useLarguraDaTela`): abaixo
+de 900 px, uma coluna de polegar; acima, duas colunas. Não existe uma versão por plataforma.
+
+Conta de demonstração: `ana.silva@email.com` / `Purifica@2025`. Na recuperação de senha o código
+não sai por e-mail — ele aparece na própria tela, para a apresentação não depender de caixa de
+entrada.
 
 ## Documentação
 
