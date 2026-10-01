@@ -14,3 +14,4 @@ export { Protegida } from './Protegida';
 export { Rotulo } from './Rotulo';
 export { Tela } from './Tela';
 export { EntradaTexto, Texto } from './Texto';
+export { FaixaPrototipo } from './FaixaPrototipo';
