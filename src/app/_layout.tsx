@@ -10,7 +10,9 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { FaixaPrototipo } from '../components';
 import { ProvedorSessao } from '../store/sessao';
 import { colors } from '../theme';
 
@@ -43,13 +45,20 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ProvedorSessao>
         <StatusBar style="dark" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: colors.fundo },
-          }}
-        />
+        {/* Só no navegador: é o site publicado que precisa avisar. No celular não há
+            faixa, e a área segura do topo já é tratada por cada tela. */}
+        <View style={estilos.raiz}>
+          {Platform.OS === 'web' && <FaixaPrototipo />}
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.fundo },
+            }}
+          />
+        </View>
       </ProvedorSessao>
     </SafeAreaProvider>
   );
 }
+
+const estilos = StyleSheet.create({ raiz: { flex: 1 } });
