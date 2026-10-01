@@ -54,6 +54,15 @@ Conta de demonstração: `ana.silva@email.com` / `Purifica@2025`. Na recuperaç�
 não sai por e-mail — ele aparece na própria tela, para a apresentação não depender de caixa de
 entrada.
 
+## Protótipo publicado
+
+A cada push em `develop`, o workflow `.github/workflows/pages.yml` publica a versão web no
+GitHub Pages: <https://danieldonanfer.github.io/clean-air-tech/>. O site mostra uma faixa
+avisando que os dados são simulados. O `baseUrl` `/clean-air-tech` está em `app.json`
+(`experiments.baseUrl`); localmente `npm run web` continua abrindo na raiz.
+
+Requer **Settings → Pages → Source: GitHub Actions** no repositório.
+
 ## Documentação
 
 | Arquivo                                                  | Conteúdo                                                                    |
