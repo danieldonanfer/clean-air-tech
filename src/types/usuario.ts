@@ -1,4 +1,5 @@
 /** Tipos da conta do usuário. */
+import type { ChaveObjetivo } from '../utils/objetivos';
 
 export interface Usuario {
   nome: string;
@@ -21,6 +22,7 @@ export interface DadosCadastro {
   email: string;
   telefone: string;
   senha: string;
-  objetivo: string;
+  /** Chave do objetivo escolhido (ver `utils/objetivos.ts`), não o texto. */
+  objetivo: ChaveObjetivo;
   aceitouTermos: boolean;
 }
