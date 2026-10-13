@@ -1,6 +1,6 @@
 name: Deploy GitHub Pages
 
-# Publica o protótipo web (dados simulados) a cada push em develop.
+# Publica o app web a cada push em develop (com a API real se a variavel EXPO_PUBLIC_API_URL existir).
 # Requer Settings > Pages > Source: "GitHub Actions".
 on:
   push:
@@ -27,7 +27,11 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # A URL da API vem da variavel do repositorio EXPO_PUBLIC_API_URL (Settings > Secrets and
+      # variables > Actions > Variables). Sem ela, o site publica em modo demonstracao.
       - run: npx expo export --platform web --output-dir dist
+        env:
+          EXPO_PUBLIC_API_URL: ${{ vars.EXPO_PUBLIC_API_URL }}
       # O export é uma página única: o Pages devolve 404 em rotas como /painel.
       # Servir o index.html como 404.html faz o app abrir e resolver a rota.
       - run: cp dist/index.html dist/404.html
