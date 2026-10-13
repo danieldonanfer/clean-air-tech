@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Aviso, Botao, Campo, Tela, Texto } from '../../components';
 import { authService } from '../../services/authService';
+import { modoApi } from '../../services/config';
 import { CONTA_DEMONSTRACAO } from '../../services/contaLocal';
 import { useSessao } from '../../store/sessao';
 import { colors, spacing, typography } from '../../theme';
@@ -11,7 +12,7 @@ import { MarcaAcesso } from './componentes/MarcaAcesso';
 /** Tela 1 — entrada no aplicativo. */
 export function TelaLogin() {
   const { entrar } = useSessao();
-  const [email, setEmail] = useState<string>(CONTA_DEMONSTRACAO.email);
+  const [email, setEmail] = useState<string>(modoApi ? '' : CONTA_DEMONSTRACAO.email);
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
@@ -104,10 +105,12 @@ export function TelaLogin() {
         </Pressable>
       </View>
 
-      <Texto style={estilos.nota}>
-        Protótipo do TCC · a conta de demonstração é {CONTA_DEMONSTRACAO.email} com a senha{' '}
-        {CONTA_DEMONSTRACAO.senha}
-      </Texto>
+      {!modoApi && (
+        <Texto style={estilos.nota}>
+          Protótipo do TCC · a conta de demonstração é {CONTA_DEMONSTRACAO.email} com a senha{' '}
+          {CONTA_DEMONSTRACAO.senha}
+        </Texto>
+      )}
     </Tela>
   );
 }

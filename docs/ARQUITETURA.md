@@ -55,19 +55,21 @@ Isso permite:
   teste agora está em `src/utils/__tests__/iqa.test.ts`, `senha.test.ts` e
   `src/services/__tests__/simulador.test.ts`.
 
-## Dados enquanto o back-end não existe
+## Serviços: API real ou simulação
 
-`src/services/` já está no lugar, mas com implementação **mock**:
+`src/services/` é a única camada que sabe de onde vêm os dados. Para cada assunto há um **contrato** (`authContrato.ts`) e duas implementações, escolhidas uma vez por `config.ts` conforme a variável `EXPO_PUBLIC_API_URL`:
 
-- `simulador.ts` — gera as leituras dos sensores com um modelo de três camadas (valor de base,
-  ciclo diário de ocupação e ruído suave com semente). É determinístico de propósito: pedir o
-  histórico duas vezes devolve o mesmo histórico, senão o gráfico mudaria a cada recarregamento.
-- `contaLocal.ts` — usuário, senha e códigos de recuperação em memória. A senha fica em texto
-  porque guardar hash no cliente não protege nada; o hash é responsabilidade do servidor.
-- `arService`, `authService`, `perfilService`, `assistenteService`, `dispositivoService` — a
-  interface que as telas consomem. Quando a API real entrar, só o corpo destes arquivos muda.
+| Assunto                                                | Contrato        | API real       | Simulação (modo demonstração)                                                                |
+| ------------------------------------------------------ | --------------- | -------------- | -------------------------------------------------------------------------------------------- |
+| Acesso (login, cadastro, recuperação de senha, logout) | `AuthService`   | `authApi.ts`   | `authMock.ts`                                                                                |
+| Perfil (dados, troca de senha, exclusão)               | `PerfilService` | `perfilApi.ts` | `perfilMock.ts`                                                                              |
+| Qualidade do ar, assistente, dispositivo               |                 |                | `simulador.ts` e serviços próprios (o banco já está pronto; a API desses assuntos ainda não) |
 
-Nenhuma tela importa `simulador.ts` nem `contaLocal.ts` direto.
+- `http.ts` é o cliente da API: envia o token (`Authorization: Bearer`), converte qualquer falha (erro da API, servidor fora do ar, sem internet, tempo esgotado) em `ErroDeRegra` com **mensagem já em português** e avisa a sessão quando a API recusa o token. As telas só exibem `e.message`.
+- `armazenamentoSessao.ts` guarda o token entre execuções: `expo-secure-store` no celular, `localStorage` na web (onde o token fica ao alcance dos scripts da página, então não se deve carregar código de terceiros não confiável).
+- `src/store/sessao.tsx` restaura a sessão ao abrir (`GET /v1/auth/eu`) e expõe `carregando`; `Protegida` e a rota `/` esperam essa verificação antes de decidir para onde ir.
+- O plano gratuito de hospedagem "dorme": o `http.ts` espera até 45 s antes de desistir, para a primeira chamada depois de ociosidade não virar erro.
+- `contaLocal.ts` e `simulador.ts` são só do modo demonstração; nenhuma tela os importa direto (exceto os textos da conta de demonstração, exibidos só nesse modo).
 
 ## Dependências adicionadas além do enxoval inicial
 
@@ -79,6 +81,9 @@ Nenhuma tela importa `simulador.ts` nem `contaLocal.ts` direto.
 - `expo-font` e `@expo-google-fonts/plus-jakarta-sans` — a fonte do protótipo aprovado no Figma,
   carregada no layout raiz (ver [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md)). O pacote evita versionar
   arquivos `.ttf` no repositório e entrega os pesos já com os nomes de família usados pelo tema.
+
+- `expo-secure-store` — guarda o token da sessão no celular (Keychain/Keystore). Na web o app usa o
+  `localStorage`. Escolhida por ser o módulo recomendado pela Expo para segredos pequenos.
 
 Continua valendo a regra de não escolher biblioteca de estado global nem de componentes de UI sem
 alinhar com o time: o estado de sessão usa Context API pura (`src/store/sessao.tsx`) e a
@@ -93,7 +98,5 @@ Ver [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) para os tokens de tema e convenções v
 - Biblioteca de gerenciamento de estado global em `src/store/` — ainda não escolhida. Por ora
   `src/store/sessao.tsx` usa Context API pura, justamente para não decidir isso sozinho. Não
   instalar nenhuma sem alinhar com o time.
-- Persistência da sessão entre execuções (`expo-secure-store` ou AsyncStorage) — hoje a sessão
-  vive só em memória, então recarregar a página web derruba o login.
 - Biblioteca de componentes de UI (ex.: Tamagui, NativeWind/Tailwind, React Native Paper) — ainda
   não escolhida. Até lá, estilizar com `StyleSheet` nativo do React Native.

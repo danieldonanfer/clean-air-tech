@@ -17,6 +17,7 @@ import {
 import { authService } from '../../services/authService';
 import { useSessao } from '../../store/sessao';
 import { colors, radius, spacing, typography } from '../../theme';
+import { TEXTO_OBJETIVO, type ChaveObjetivo } from '../../utils/objetivos';
 import { avaliarSenha } from '../../utils/senha';
 
 /**
@@ -29,28 +30,28 @@ import { avaliarSenha } from '../../utils/senha';
  */
 const COMODOS = ['Sala de estar', 'Quarto', 'Cozinha', 'Escritório'];
 
-const OBJETIVOS: { chave: string; titulo: string; apoio: string; icone: NomeDeIcone }[] = [
+const OBJETIVOS: { chave: ChaveObjetivo; titulo: string; apoio: string; icone: NomeDeIcone }[] = [
   {
     chave: 'ar',
-    titulo: 'Monitoramento de ar e poluentes',
+    titulo: TEXTO_OBJETIVO.ar,
     apoio: 'Acompanhe IQA, PM2.5, COVs e CO₂ em tempo real',
     icone: 'marca',
   },
   {
     chave: 'alergia',
-    titulo: 'Controle de alergias e asma',
+    titulo: TEXTO_OBJETIVO.alergia,
     apoio: 'Alertas mais sensíveis a ácaros e poeira fina',
     icone: 'escudo',
   },
   {
     chave: 'conforto',
-    titulo: 'Conforto e automação',
+    titulo: TEXTO_OBJETIVO.conforto,
     apoio: 'Rotinas de ventilação junto com a casa conectada',
     icone: 'engrenagem',
   },
   {
     chave: 'outro',
-    titulo: 'Outro objetivo',
+    titulo: TEXTO_OBJETIVO.outro,
     apoio: 'Você pode reconfigurar isso quando quiser',
     icone: 'usuario',
   },
@@ -75,7 +76,7 @@ export function TelaCadastro() {
   const [senha, setSenha] = useState('');
   const [confirmacao, setConfirmacao] = useState('');
   const [comodo, setComodo] = useState(COMODOS[0]);
-  const [objetivo, setObjetivo] = useState('ar');
+  const [objetivo, setObjetivo] = useState<ChaveObjetivo>('ar');
   const [aceitouTermos, setAceitouTermos] = useState(false);
 
   const podeAvancar =
@@ -94,7 +95,7 @@ export function TelaCadastro() {
         telefone,
         senha,
         aceitouTermos,
-        objetivo: OBJETIVOS.find((o) => o.chave === objetivo)?.titulo ?? '',
+        objetivo,
       });
       entrar(sessao);
       router.replace('/painel');

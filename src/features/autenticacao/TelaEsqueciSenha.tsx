@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { Aviso, Botao, Cabecalho, Campo, Icone, Passos, Tela, Texto } from '../../components';
 import { authService } from '../../services/authService';
+import { modoApi } from '../../services/config';
 import { CONTA_DEMONSTRACAO } from '../../services/contaLocal';
 import { colors, radius, spacing, typography } from '../../theme';
 
@@ -12,7 +13,7 @@ import { colors, radius, spacing, typography } from '../../theme';
  * a nova senha.
  */
 export function TelaEsqueciSenha() {
-  const [email, setEmail] = useState<string>(CONTA_DEMONSTRACAO.email);
+  const [email, setEmail] = useState<string>(modoApi ? '' : CONTA_DEMONSTRACAO.email);
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
 
@@ -23,7 +24,11 @@ export function TelaEsqueciSenha() {
       const pedido = await authService.pedirCodigo(email);
       router.push({
         pathname: '/verificar-email',
-        params: { email: pedido.email, codigoDemo: pedido.codigoParaDemonstracao },
+        params: {
+          email: pedido.email,
+          expira: String(pedido.expiraEmSegundos),
+          codigoDemo: pedido.codigoParaDemonstracao,
+        },
       });
     } catch (e) {
       setErro(e instanceof Error ? e.message : 'Não foi possível enviar o código.');

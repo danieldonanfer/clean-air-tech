@@ -50,18 +50,19 @@ npm run start
 As telas são as mesmas em celular e web. O layout muda por largura (`useLarguraDaTela`): abaixo
 de 900 px, uma coluna de polegar; acima, duas colunas. Não existe uma versão por plataforma.
 
-Conta de demonstração: `ana.silva@email.com` / `Purifica@2025`. Na recuperação de senha o código
-não sai por e-mail — ele aparece na própria tela, para a apresentação não depender de caixa de
-entrada.
+## API real ou modo demonstração
 
-## Protótipo publicado
+O app tem dois modos, escolhidos pela variável `EXPO_PUBLIC_API_URL` (ver `.env.example`):
 
-A cada push em `develop`, o workflow `.github/workflows/pages.yml` publica a versão web no
-GitHub Pages: <https://danieldonanfer.github.io/clean-air-tech/>. O site mostra uma faixa
-avisando que os dados são simulados. O `baseUrl` `/clean-air-tech` está em `app.json`
-(`experiments.baseUrl`); localmente `npm run web` continua abrindo na raiz.
+- **Com a variável** (ex.: `https://clean-air-tech-api.onrender.com`): cadastro, login, logout, recuperação de senha e perfil falam com a API do repositório [`clean-air-tech-api`](https://github.com/danieldonanfer/clean-air-tech-api), que grava no banco. O código de recuperação chega **por e-mail**, e a sessão sobrevive a recarregar a página.
+- **Sem a variável:** conta simulada em memória, para demonstrar as telas sem back-end. Conta de demonstração: `ana.silva@email.com` / `Purifica@2025`; nesse modo o código de recuperação aparece na própria tela.
 
-Requer **Settings → Pages → Source: GitHub Actions** no repositório.
+```bash
+# desenvolvimento contra uma API local ou publicada
+EXPO_PUBLIC_API_URL=http://localhost:4000 npm run web
+```
+
+Para o site do GitHub Pages usar a API, crie a **variável** de repositório `EXPO_PUBLIC_API_URL` em _Settings → Secrets and variables → Actions → Variables_; o workflow `pages.yml` a injeta no build. A API precisa aceitar a origem `https://danieldonanfer.github.io` no CORS. Contrato das rotas: [`docs/API_CONTRATO.md`](https://github.com/danieldonanfer/clean-air-tech-api/blob/develop/docs/API_CONTRATO.md).
 
 ## Documentação
 

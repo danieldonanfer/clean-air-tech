@@ -9,11 +9,15 @@ const CASAS = 6;
 
 /** Tela 3 — o código de 6 dígitos, com os campos avançando sozinhos. */
 export function TelaVerificarEmail() {
-  const { email, codigoDemo } = useLocalSearchParams<{ email?: string; codigoDemo?: string }>();
+  const { email, codigoDemo, expira } = useLocalSearchParams<{
+    email?: string;
+    codigoDemo?: string;
+    expira?: string;
+  }>();
   const [digitos, setDigitos] = useState<string[]>(Array(CASAS).fill(''));
   const [erro, setErro] = useState<string | null>(null);
   const [carregando, setCarregando] = useState(false);
-  const [segundos, setSegundos] = useState(299);
+  const [segundos, setSegundos] = useState(() => Math.max(0, Number(expira) || 300) - 1);
   const campos = useRef<(TextInput | null)[]>([]);
 
   useEffect(() => {
